@@ -1,0 +1,24 @@
+{
+  "bundler": "vite",
+  "projectName": "skild",
+  "mode": "file-router",
+  "typescript": true,
+  "packageManager": "npm",
+  "includeExamples": false,
+  "tailwind": true,
+  "projectPreset": "default",
+  "routerOnly": false,
+  "addOnOptions": {},
+  "git": true,
+  "install": true,
+  "intent": true,
+  "version": 1,
+  "framework": "react",
+  "chosenAddOns": [
+    "biome",
+    "clerk",
+    "compiler",
+    "shadcn",
+    "tanstack-query"
+  ]
+}
