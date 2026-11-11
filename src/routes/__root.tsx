@@ -8,7 +8,7 @@ import {
 	Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Crosshair } from "#/components/Crosshair";
 import { Navbar } from "#/components/Navbar";
 import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
@@ -27,21 +27,45 @@ function PostHogUserIdentification() {
 	const { isLoaded, user } = useUser();
 	const posthog = usePostHog();
 	const identifiedUserId = useRef<string | null>(null);
+	const [isPostHogReady, setIsPostHogReady] = useState(false);
+
+	// PostHogProvider calls init() in its own effect, which runs after this
+	// child's effects. Defer one tick so persisted identity is readable.
+	useEffect(() => {
+		if (posthog.__loaded) {
+			setIsPostHogReady(true);
+			return;
+		}
+
+		const timeout = window.setTimeout(() => {
+			setIsPostHogReady(posthog.__loaded);
+		}, 0);
+		return () => window.clearTimeout(timeout);
+	}, [posthog]);
 
 	useEffect(() => {
-		if (!isLoaded) return;
+		if (!isLoaded || !isPostHogReady) return;
+
+		// PostHog persists identity across page loads, so check its stored state
+		// as well as the mount-local ref (which is null after a fresh load).
+		const hasPersistedIdentity =
+			posthog.get_property("$user_state") === "identified";
 
 		if (!user) {
-			if (identifiedUserId.current) {
+			if (identifiedUserId.current || hasPersistedIdentity) {
 				posthog.reset();
-				identifiedUserId.current = null;
 			}
+			identifiedUserId.current = null;
 			return;
 		}
 
 		if (identifiedUserId.current === user.id) return;
 
-		if (identifiedUserId.current) {
+		const isDifferentIdentifiedUser =
+			identifiedUserId.current !== null ||
+			(hasPersistedIdentity && posthog.get_distinct_id() !== user.id);
+
+		if (isDifferentIdentifiedUser) {
 			posthog.reset();
 		}
 
@@ -50,7 +74,7 @@ function PostHogUserIdentification() {
 			name: user.fullName ?? undefined,
 		});
 		identifiedUserId.current = user.id;
-	}, [isLoaded, posthog, user]);
+	}, [isLoaded, isPostHogReady, posthog, user]);
 
 	return null;
 }
