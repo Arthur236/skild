@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://coderabbit.ai/integrations/schema.v2.json
+reviews:
+  path_filters:
+    # AI agent config, skills, and instructions
+    - "!.agents/**"
+    - "!.claude/**"
+    - "!.cursorrules"
+    - "!skills-lock.json"
+
+    # Lockfiles
+    - "!package-lock.json"
+
+    # Generated code
+    - "!src/routeTree.gen.ts"
+    - "!**/*.gen.ts"
+    - "!dataconnect/.dataconnect/**"
+    - "!**/dataconnect-generated/**"
+
+    # Build output and caches
+    - "!dist/**"
+    - "!dist-ssr/**"
+    - "!.output/**"
+    - "!.tanstack/**"
+    - "!.firebase/**"
+    - "!node_modules/**"
+
+    # Binary assets
+    - "!**/*.{png,jpg,jpeg,gif,ico,webp}"
+
+    # Editor settings
+    - "!.vscode/**"

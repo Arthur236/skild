@@ -1,0 +1,25 @@
+query GetSkills($searchTerm: String = "", $limit: Int = 10) @auth(level: PUBLIC insecureReason: "Skill should be visible to everyone") {
+  skills(
+    where: {
+      _or: [
+        { title: { contains: $searchTerm } },
+        { description: { contains: $searchTerm } }
+      ]
+    },
+    orderBy: [{ createdAt: DESC }],
+    limit: $limit
+  ) {
+    id,
+    title,
+    description,
+    createdAt,
+    tags,
+    installCommand,
+    author {
+      username,
+      imageUrl,
+      clerkId,
+      email
+    }
+  }
+}
