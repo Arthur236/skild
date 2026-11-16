@@ -18,8 +18,7 @@ query GetSkills($searchTerm: String = "", $limit: Int = 10) @auth(level: PUBLIC 
     author {
       username,
       imageUrl,
-      clerkId,
-      email
+      clerkId
     }
   }
 }

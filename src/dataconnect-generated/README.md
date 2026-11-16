@@ -113,7 +113,6 @@ export interface GetSkillsData {
       username?: string | null;
       imageUrl?: string | null;
       clerkId: string;
-      email: string;
     } & User_Key;
   } & Skill_Key)[];
 }
